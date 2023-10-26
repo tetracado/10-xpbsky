@@ -69,11 +69,16 @@ def extractimages(stillimages):
 
 def maybethiswilluploadimages(imagepaths,textpost):
     allimages=[]
+    print('running through uploadimages with image paths',imagepaths,'and textpost',textpost)
     for imagepath in imagepaths:
         with open(imagepath, 'rb') as file:
             img_data=file.read()
+            print('read file')
             upload=bskyclient.com.atproto.repo.upload_blob(img_data)
+            print('uploaded image')
             allimages.append(models.AppBskyEmbedImages.Image(alt='no alt text available', image=upload.blob))
+            file.close()
+            print('uploaded image from',imagepath)
     embed = models.AppBskyEmbedImages.Main(images=allimages)
     bskyclient.com.atproto.repo.create_record(
         models.ComAtprotoRepoCreateRecord.Data(
@@ -119,7 +124,7 @@ bskyclient=Client()
 bskyclient.login('tetracado.bsky.social', xphid.bskyapppass)
 print('logged in to bsky')
 
-#readtweets("https://nitter.net/tetracado")
+readtweets("https://nitter.net/tetracado")
 
 
 schedule.every(1).hour.do(readtweets,"https://nitter.net/tetracado") 

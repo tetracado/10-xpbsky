@@ -38,6 +38,7 @@ def saveimg(link):
     imgpath=os.path.join(mydir,'img',imgname)
     print('about to save img at:',imgpath)
     img_data=requests.get(link,headers={'User-Agent': 'ABC/3.0'}).content
+    time.sleep(3)
     savefile= open(imgpath,'wb')
     savefile.write(img_data)
     savefile.close()
