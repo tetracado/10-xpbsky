@@ -1,17 +1,18 @@
 import xpsel
 import xphid
-from selenium import webdriver
-import platform
+#from selenium import webdriver
+#import platform
 #from webdriver_manager.chrome import ChromeDriverManager
 #from webdriver_manager.core.os_manager import ChromeType
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.chrome.service import Service
+#from selenium.webdriver.chrome.options import Options
+#from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
 import time
-import re
+#import re
 from atproto import Client, models
 import schedule
+import os
 
 def readtweets(link):
     try:
@@ -42,13 +43,14 @@ def readtweets(link):
                                 mediatext=tweet.find_element(By.CLASS_NAME,"tweet-content").text
                                 print('found mediatext tweet from my account:',mediatext,'posting now')
                                 maybethiswilluploadimages(extractimages(stillimages),mediatext)
-                            except:
-                                print('couldnt extract images')
+                            except Exception as errortext:
+                                print('couldnt extract images with error: ', errortext)
                         except NoSuchElementException:
                             try:
                                 plaintext=tweet.find_element(By.CLASS_NAME,"tweet-content").text
                                 print('found plaintext tweet from my account:',plaintext,'posting now')
                                 bskyclient.send_post(text=plaintext)
+                                print('posted plaintext tweet')
                             except NoSuchElementException:
                                 print('couldnt process tweet like at all')
             except NoSuchElementException:
@@ -76,7 +78,7 @@ def maybethiswilluploadimages(imagepaths,textpost):
             print('read file')
             upload=bskyclient.com.atproto.repo.upload_blob(img_data)
             print('uploaded image')
-            allimages.append(models.AppBskyEmbedImages.Image(alt='no alt text available', image=upload.blob))
+            allimages.append(models.AppBskyEmbedImages.Image(alt='crossposted with xpbsky: no alt text available', image=upload.blob))
             file.close()
             print('uploaded image from',imagepath)
     embed = models.AppBskyEmbedImages.Main(images=allimages)
@@ -89,16 +91,14 @@ def maybethiswilluploadimages(imagepaths,textpost):
             ),
         )
     )
+    print('posted image tweet')
 
-
-    
-
-
-
+mydir=os.path.dirname(__file__)
+usedlinkspath=os.path.join(mydir,'usedlinks.txt')
 
 def dupecheck(link):
     try:
-        fhand=open('usedlinks.txt','r+')
+        fhand=open(usedlinkspath,'r+')
         print('opened usedlinks.txt')
         found=False
         for line in fhand:
@@ -116,8 +116,8 @@ def dupecheck(link):
             fhand.close()
             print('wrote and closed usedlinks.txt')
             return(False)
-    except:
-        print('couldnt find link')
+    except Exception as errortext:
+        print('couldnt find link with error:',errortext)
         found=False
 
 bskyclient=Client()
