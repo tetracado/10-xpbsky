@@ -1,9 +1,6 @@
 import xphid
-import time
 import re
-from atproto import Client, models,client_utils
-import schedule
-import os
+from atproto import Client, models
 import typing as t
 
 def maybethiswilluploadimages(imagepaths,textpost):
@@ -29,13 +26,6 @@ def maybethiswilluploadimages(imagepaths,textpost):
         )
     )
     print('posted image tweet')
-
-def sendtweet(text):
-    bskyclient.send_post(client_utils.TextBuilder().text(text).tag('#testtag','testtag'),facets=injecturls(text))
-    print('sent bsky post')
-
-mydir=os.path.dirname(__file__)
-usedlinkspath=os.path.join(mydir,'usedlinks.txt')
 
 def extract_url_byte_positions(text: str, *, encoding: str = 'UTF-8') -> t.List[t.Tuple[str, int, int]]:
     """This function will detect any links beginning with http or https."""
@@ -70,6 +60,12 @@ def injecturls(text: str):
         )
     return facets
 
+def sendtweet(text):
+    bskyclient.send_post(text)
+    print('bsky sent')
+
+
 bskyclient=Client()
 bskyclient.login('tetracado.bsky.social', xphid.bskyapppass)
 print('logged in to bsky')
+

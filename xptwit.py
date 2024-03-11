@@ -1,10 +1,9 @@
 import tweepy
 import xphid
-import schedule
-import time
 
-def posttweet(tweettext):
+def sendtweet(tweettext):
     postresponse=postclient.create_tweet(text=tweettext,user_auth=False)
+    print('tweet sent')
     return(postresponse)
 
 def startup():
@@ -44,10 +43,10 @@ oauth2_user_handler=tweepy.OAuth2UserHandler(
 
 (thisat, thisrt, postclient)=startup()
 
-schedule.every(90).minutes.do(refreshcycle)
-posttweet('sample tweet!')
+#schedule.every(90).minutes.do(refreshcycle)
 
-while True:
-    schedule.run_pending()
-    time.sleep(1)
+
+#while True:
+   # schedule.run_pending()
+   # time.sleep(1)
 
