@@ -1,8 +1,15 @@
 import tweepy
 import xphid
 
-def sendtweet(tweettext):
-    postresponse=postclient.create_tweet(text=tweettext,user_auth=False)
+def sendtweet(tweettext,images):
+    if len(images)>0:
+        mediaids=[]
+        for image in images:
+            returnmedia=v1api.simple_upload(image)
+            mediaids.append(returnmedia.media_id)
+        postresponse=postclient.create_tweet(text=tweettext,user_auth=False,media_ids=mediaids)
+    else:    
+        postresponse=postclient.create_tweet(text=tweettext,user_auth=False)
     print('tweet sent')
     return(postresponse)
 
@@ -42,6 +49,15 @@ oauth2_user_handler=tweepy.OAuth2UserHandler(
     )
 
 (thisat, thisrt, postclient)=startup()
+
+v1auth=tweepy.OAuth1UserHandler(
+    consumer_key=xphid.twitapikey,
+    consumer_secret=xphid.twitapisecret,
+    access_token=xphid.twitaccesstoken,
+    access_token_secret=xphid.twitaccesssecret
+)
+
+v1api=tweepy.API(v1auth)
 
 #schedule.every(90).minutes.do(refreshcycle)
 

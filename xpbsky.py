@@ -60,8 +60,9 @@ def injecturls(text: str):
         )
     return facets
 
-def sendtweet(text):
-    bskyclient.send_post(text)
+def sendtweet(text,images):
+    #bskyclient.send_post(text)
+    maybethiswilluploadimages(images,text)
     print('bsky sent')
 
 
