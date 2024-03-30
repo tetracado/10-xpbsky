@@ -33,9 +33,10 @@ async def on_message(message):
         print('message:',message)
         print('attachments',message.attachments)
         if  str(message.author)=="tetra6238" and "xpbot" in message.content.lower():       
-            if len(message.content)>160:
+            if len(message.content)>260:
                 print('texts too long for tweet at',len(message.content),'rejected')     
                 await message.channel.send('text too long for tweet at '+str(len(message.content))+' rejected')
+                return
             lines=message.content.splitlines()
             lines=lines[1:]
             tweettext='\n'.join(lines)
@@ -52,13 +53,14 @@ async def on_message(message):
                     await attachment.save(filename)
                 print('saved attachements')
             xpbsky.sendtweet(tweettext,savedpaths)
+            await message.channel.send('bsky sent')
             xptwit.sendtweet(tweettext,savedpaths)
-            await message.channel.send('bsky and tweet sent')
+            await message.channel.send('tweet sent')
+            return
 
     except Exception as exception:
         print("error handled with exception",exception)
-    
-    await print('looping')
+        await message.channel.send('error handled with exception '+str(exception))
 
 client.run(xphid.discbotkey)
 
