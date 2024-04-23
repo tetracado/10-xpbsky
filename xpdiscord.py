@@ -6,6 +6,7 @@ from discord.ext import tasks
 import os
 import time
 import re
+from PIL import Image
 
 mydir=os.path.dirname(__file__)
 imgpath=os.path.join(mydir,'img')
@@ -23,6 +24,18 @@ client = discord.Client(intents=intents)
 async def on_ready():
     print(f'We have logged in as {client.user}')
     refreshtwitter.start()
+
+def reducefilesizes(savedpaths):
+    for path in savedpaths:
+        filesize=os.path.getsize(path)
+        while filesize>1000000:
+            print('image file size too big at',filesize)
+            im=Image.open(path)
+            im=im.resize((im.width//2,im.height//2))
+            im.save(path,quality=75,optimize=True)
+            filesize=os.path.getsize(path)
+            print('saved image with reduced file size',filesize)
+
 
 @client.event
 async def on_message(message):
@@ -52,6 +65,7 @@ async def on_message(message):
                     time.sleep(1)
                     await attachment.save(filename)
                 print('saved attachements')
+                reducefilesizes(savedpaths)
             xpbsky.sendtweet(tweettext,savedpaths)
             await message.channel.send('bsky sent')
             xptwit.sendtweet(tweettext,savedpaths)
